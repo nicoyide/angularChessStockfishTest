@@ -16,6 +16,7 @@ import { Router } from '@angular/router';
 export class PlayAgainstComputerDialogComponent {
   public stockfishLevels: readonly number[] = [1, 2, 3, 4, 5];
   public stockfishLevel: number = 1;
+  public playerColor: Color = Color.White;
 
   constructor(
     private stockfishService: StockfishService,
@@ -25,6 +26,10 @@ export class PlayAgainstComputerDialogComponent {
 
   public selectStockfishLevel(level: number): void {
     this.stockfishLevel = level;
+  }
+
+  public choosePlayerColor(color: Color): void {
+    this.playerColor = color;
   }
 
   public play(color: "w" | "b"): void {

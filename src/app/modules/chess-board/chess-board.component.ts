@@ -213,4 +213,8 @@ export class ChessBoardComponent implements OnInit, OnDestroy {
 
     moveSound.play();
   }
+
+  public choosePlayerColor(color: Color): void {
+    this.chessBoard.setPlayerColor(color);
+  }
 }

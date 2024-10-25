@@ -344,6 +344,10 @@ export class ChessBoard {
         this._isGameOver = this.isGameFinished();
     }
 
+    public setPlayerColor(color: Color): void {
+        this._playerColor = color;
+    }
+
     private handlingSpecialMoves(piece: Piece, prevX: number, prevY: number, newX: number, newY: number, moveType: Set<MoveType>): void {
         if (piece instanceof King && Math.abs(newY - prevY) === 2) {
             // newY > prevY  === king side castle

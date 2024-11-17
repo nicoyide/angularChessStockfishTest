@@ -213,4 +213,28 @@ export class ChessBoardComponent implements OnInit, OnDestroy {
 
     moveSound.play();
   }
+
+  // Add support for multiplayer games
+  public isMultiplayer: boolean = false;
+  public player1Color: Color = Color.White;
+  public player2Color: Color = Color.Black;
+
+  public toggleMultiplayer(): void {
+    this.isMultiplayer = !this.isMultiplayer;
+    if (this.isMultiplayer) {
+      this.player1Color = Color.White;
+      this.player2Color = Color.Black;
+    } else {
+      this.player1Color = this.chessBoard.playerColor;
+      this.player2Color = this.chessBoard.playerColor === Color.White ? Color.Black : Color.White;
+    }
+  }
+
+  public get currentPlayerColor(): Color {
+    return this.isMultiplayer ? this.chessBoard.playerColor : this.player1Color;
+  }
+
+  public get opponentPlayerColor(): Color {
+    return this.isMultiplayer ? (this.chessBoard.playerColor === Color.White ? Color.Black : Color.White) : this.player2Color;
+  }
 }

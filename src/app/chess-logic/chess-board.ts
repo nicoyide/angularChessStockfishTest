@@ -9,6 +9,9 @@ import { Piece } from "./pieces/piece";
 import { Queen } from "./pieces/queen";
 import { Rook } from "./pieces/rook";
 
+/**
+ * The ChessBoard class represents the chess board and handles the game logic.
+ */
 export class ChessBoard {
     private chessBoard: (Piece | null)[][];
     private readonly chessBoardSize: number = 8;
@@ -58,56 +61,101 @@ export class ChessBoard {
         this._gameHistory = [{ board: this.chessBoardView, lastMove: this._lastMove, checkState: this._checkState }];
     }
 
+    /**
+     * Gets the color of the player.
+     */
     public get playerColor(): Color {
         return this._playerColor;
     }
 
+    /**
+     * Gets the current view of the chess board.
+     */
     public get chessBoardView(): (FENChar | null)[][] {
         return this.chessBoard.map(row => {
             return row.map(piece => piece instanceof Piece ? piece.FENChar : null);
         })
     }
 
+    /**
+     * Gets the safe squares for the current player.
+     */
     public get safeSquares(): SafeSquares {
         return this._safeSquares;
     }
 
+    /**
+     * Gets the last move made on the board.
+     */
     public get lastMove(): LastMove | undefined {
         return this._lastMove;
     }
 
+    /**
+     * Gets the current check state of the board.
+     */
     public get checkState(): CheckState {
         return this._checkState;
     }
 
+    /**
+     * Gets whether the game is over.
+     */
     public get isGameOver(): boolean {
         return this._isGameOver;
     }
 
+    /**
+     * Gets the game over message.
+     */
     public get gameOverMessage(): string | undefined {
         return this._gameOverMessage;
     }
 
+    /**
+     * Gets the board as a FEN string.
+     */
     public get boardAsFEN(): string {
         return this._boardAsFEN;
     }
 
+    /**
+     * Gets the list of moves made in the game.
+     */
     public get moveList(): MoveList {
         return this._moveList;
     }
 
+    /**
+     * Gets the game history.
+     */
     public get gameHistory(): GameHistory {
         return this._gameHistory;
     }
 
+    /**
+     * Checks if a square is dark.
+     * @param x The x-coordinate of the square.
+     * @param y The y-coordinate of the square.
+     */
     public static isSquareDark(x: number, y: number): boolean {
         return x % 2 === 0 && y % 2 === 0 || x % 2 === 1 && y % 2 === 1;
     }
 
+    /**
+     * Checks if the given coordinates are valid on the board.
+     * @param x The x-coordinate.
+     * @param y The y-coordinate.
+     */
     private areCoordsValid(x: number, y: number): boolean {
         return x >= 0 && y >= 0 && x < this.chessBoardSize && y < this.chessBoardSize;
     }
 
+    /**
+     * Checks if the player is in check.
+     * @param playerColor The color of the player.
+     * @param checkingCurrentPosition Whether to check the current position.
+     */
     public isInCheck(playerColor: Color, checkingCurrentPosition: boolean): boolean {
         for (let x = 0; x < this.chessBoardSize; x++) {
             for (let y = 0; y < this.chessBoardSize; y++) {
@@ -150,6 +198,13 @@ export class ChessBoard {
         return false;
     }
 
+    /**
+     * Checks if the position is safe after a move.
+     * @param prevX The previous x-coordinate.
+     * @param prevY The previous y-coordinate.
+     * @param newX The new x-coordinate.
+     * @param newY The new y-coordinate.
+     */
     private isPositionSafeAfterMove(prevX: number, prevY: number, newX: number, newY: number): boolean {
         const piece: Piece | null = this.chessBoard[prevX][prevY];
         if (!piece) return false;
@@ -171,6 +226,9 @@ export class ChessBoard {
         return isPositionSafe;
     }
 
+    /**
+     * Finds the safe squares for the current player.
+     */
     private findSafeSqures(): SafeSquares {
         const safeSqures: SafeSquares = new Map<string, Coords[]>();
 
@@ -243,6 +301,12 @@ export class ChessBoard {
         return safeSqures;
     }
 
+    /**
+     * Checks if a pawn can capture en passant.
+     * @param pawn The pawn piece.
+     * @param pawnX The x-coordinate of the pawn.
+     * @param pawnY The y-coordinate of the pawn.
+     */
     private canCaptureEnPassant(pawn: Pawn, pawnX: number, pawnY: number): boolean {
         if (!this._lastMove) return false;
         const { piece, prevX, prevY, currX, currY } = this._lastMove;
@@ -265,6 +329,11 @@ export class ChessBoard {
         return isPositionSafe;
     }
 
+    /**
+     * Checks if the king can castle.
+     * @param king The king piece.
+     * @param kingSideCastle Whether to check for king-side castling.
+     */
     private canCastle(king: King, kingSideCastle: boolean): boolean {
         if (king.hasMoved) return false;
 
@@ -283,12 +352,18 @@ export class ChessBoard {
 
         if (!kingSideCastle && this.chessBoard[kingPositionX][1]) return false;
 
-
-
         return this.isPositionSafeAfterMove(kingPositionX, kingPositionY, kingPositionX, firstNextKingPositionY) &&
             this.isPositionSafeAfterMove(kingPositionX, kingPositionY, kingPositionX, secondNextKingPositionY);
     }
 
+    /**
+     * Moves a piece on the board.
+     * @param prevX The previous x-coordinate of the piece.
+     * @param prevY The previous y-coordinate of the piece.
+     * @param newX The new x-coordinate of the piece.
+     * @param newY The new y-coordinate of the piece.
+     * @param promotedPieceType The type of the promoted piece, if any.
+     */
     public move(prevX: number, prevY: number, newX: number, newY: number, promotedPieceType: FENChar | null): void {
         if (this._isGameOver) throw new Error("Game is over, you cant play move");
 
@@ -340,10 +415,18 @@ export class ChessBoard {
         this._boardAsFEN = this.FENConverter.convertBoardToFEN(this.chessBoard, this._playerColor, this._lastMove, this.fiftyMoveRuleCounter, this.fullNumberOfMoves);
         this.updateThreeFoldRepetitionDictionary(this._boardAsFEN);
 
-
         this._isGameOver = this.isGameFinished();
     }
 
+    /**
+     * Handles special moves like castling and en passant.
+     * @param piece The piece being moved.
+     * @param prevX The previous x-coordinate of the piece.
+     * @param prevY The previous y-coordinate of the piece.
+     * @param newX The new x-coordinate of the piece.
+     * @param newY The new y-coordinate of the piece.
+     * @param moveType The set of move types.
+     */
     private handlingSpecialMoves(piece: Piece, prevX: number, prevY: number, newX: number, newY: number, moveType: Set<MoveType>): void {
         if (piece instanceof King && Math.abs(newY - prevY) === 2) {
             // newY > prevY  === king side castle
@@ -370,6 +453,10 @@ export class ChessBoard {
         }
     }
 
+    /**
+     * Creates a promoted piece based on the given type.
+     * @param promtoedPieceType The type of the promoted piece.
+     */
     private promotedPiece(promtoedPieceType: FENChar): Knight | Bishop | Rook | Queen {
         if (promtoedPieceType === FENChar.WhiteKnight || promtoedPieceType === FENChar.BlackKnight)
             return new Knight(this._playerColor);
@@ -383,6 +470,9 @@ export class ChessBoard {
         return new Queen(this._playerColor);
     }
 
+    /**
+     * Checks if the game is finished.
+     */
     private isGameFinished(): boolean {
         if (this.insufficientMaterial()) {
             this._gameOverMessage = "Draw due insufficient material";
@@ -412,18 +502,27 @@ export class ChessBoard {
         return false;
     }
 
-    // Insufficient material
-
+    /**
+     * Checks if a player has only two knights and a king.
+     * @param pieces The pieces of the player.
+     */
     private playerHasOnlyTwoKnightsAndKing(pieces: { piece: Piece, x: number, y: number }[]): boolean {
         return pieces.filter(piece => piece.piece instanceof Knight).length === 2;
     }
 
+    /**
+     * Checks if a player has only bishops with the same color and a king.
+     * @param pieces The pieces of the player.
+     */
     private playerHasOnlyBishopsWithSameColorAndKing(pieces: { piece: Piece, x: number, y: number }[]): boolean {
         const bishops = pieces.filter(piece => piece.piece instanceof Bishop);
         const areAllBishopsOfSameColor = new Set(bishops.map(bishop => ChessBoard.isSquareDark(bishop.x, bishop.y))).size === 1;
         return bishops.length === pieces.length - 1 && areAllBishopsOfSameColor;
     }
 
+    /**
+     * Checks if there is insufficient material to continue the game.
+     */
     private insufficientMaterial(): boolean {
         const whitePieces: { piece: Piece, x: number, y: number }[] = [];
         const blackPieces: { piece: Piece, x: number, y: number }[] = [];
@@ -472,6 +571,10 @@ export class ChessBoard {
         return false;
     }
 
+    /**
+     * Updates the three-fold repetition dictionary.
+     * @param FEN The FEN string of the current position.
+     */
     private updateThreeFoldRepetitionDictionary(FEN: string): void {
         const threeFoldRepetitionFENKey: string = FEN.split(" ").slice(0, 4).join("");
         const threeFoldRepetionValue: number | undefined = this.threeFoldRepetitionDictionary.get(threeFoldRepetitionFENKey);
@@ -487,6 +590,10 @@ export class ChessBoard {
         }
     }
 
+    /**
+     * Stores the move in the move list.
+     * @param promotedPiece The type of the promoted piece, if any.
+     */
     private storeMove(promotedPiece: FENChar | null): void {
         const { piece, currX, currY, prevX, prevY, moveType } = this._lastMove!;
         let pieceName: string = !(piece instanceof Pawn) ? piece.FENChar.toUpperCase() : "";
@@ -513,6 +620,9 @@ export class ChessBoard {
             this._moveList[this.fullNumberOfMoves - 1].push(move);
     }
 
+    /**
+     * Gets the starting piece coordinates notation.
+     */
     private startingPieceCoordsNotation(): string {
         const { piece: currPiece, prevX, prevY, currX, currY } = this._lastMove!;
         if (currPiece instanceof Pawn || currPiece instanceof King) return "";
@@ -549,6 +659,9 @@ export class ChessBoard {
         return columns[prevY] + String(prevX + 1);
     }
 
+    /**
+     * Updates the game history.
+     */
     private updateGameHistory(): void {
         this._gameHistory.push({
             board: [...this.chessBoardView.map(row => [...row])],

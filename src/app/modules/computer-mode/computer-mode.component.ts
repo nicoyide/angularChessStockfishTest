@@ -12,6 +12,8 @@ import { Color } from 'src/app/chess-logic/models';
 })
 export class ComputerModeComponent extends ChessBoardComponent implements OnInit, OnDestroy {
   private computerSubscriptions$ = new Subscription();
+  public difficultyLevels = ['Easy', 'Medium', 'Hard'];
+  public selectedDifficulty = 'Medium';
 
   constructor(private stockfishService: StockfishService) {
     super(inject(ChessBoardService));
@@ -36,7 +38,7 @@ export class ComputerModeComponent extends ChessBoardComponent implements OnInit
         const player: Color = FEN.split(" ")[1] === "w" ? Color.White : Color.Black;
         if (player !== this.stockfishService.computerConfiguration$.value.color) return;
 
-        const { prevX, prevY, newX, newY, promotedPiece } = await firstValueFrom(this.stockfishService.getBestMove(FEN));
+        const { prevX, prevY, newX, newY, promotedPiece } = await firstValueFrom(this.stockfishService.getBestMove(FEN, this.selectedDifficulty));
         this.updateBoard(prevX, prevY, newX, newY, promotedPiece);
       }
     });

@@ -5,9 +5,20 @@ import { Pawn } from "./pieces/pawn";
 import { Piece } from "./pieces/piece";
 import { Rook } from "./pieces/rook";
 
+/**
+ * The FENConverter class is responsible for converting the chess board state to a FEN string.
+ */
 export class FENConverter {
     public static readonly initalPosition: string = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
+    /**
+     * Converts the chess board state to a FEN string.
+     * @param board The current state of the chess board.
+     * @param playerColor The color of the player to move.
+     * @param lastMove The last move made on the board.
+     * @param fiftyMoveRuleCounter The counter for the fifty-move rule.
+     * @param numberOfFullMoves The number of full moves made in the game.
+     */
     public convertBoardToFEN(
         board: (Piece | null)[][],
         playerColor: Color,
@@ -49,6 +60,10 @@ export class FENConverter {
         return FEN;
     }
 
+    /**
+     * Determines the castling availability for both players.
+     * @param board The current state of the chess board.
+     */
     private castlingAvailability(board: (Piece | null)[][]): string {
         const castlingPossibilities = (color: Color): string => {
             let castlingAvailability: string = "";
@@ -77,6 +92,11 @@ export class FENConverter {
         return castlingAvailability !== "" ? castlingAvailability : "-";
     }
 
+    /**
+     * Determines the en passant possibility for the current player.
+     * @param lastMove The last move made on the board.
+     * @param color The color of the player to move.
+     */
     private enPassantPosibility(lastMove: LastMove | undefined, color: Color): string {
         if (!lastMove) return "-";
         const { piece, currX: newX, prevX, prevY } = lastMove;

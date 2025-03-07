@@ -1,6 +1,10 @@
 import { FENChar, Coords, Color } from "../models";
 import { Piece } from "./piece";
 
+/**
+ * Represents a Queen chess piece.
+ * Extends the abstract Piece class.
+ */
 export class Queen extends Piece {
     protected override _FENChar: FENChar;
     protected override _directions: Coords[] = [
@@ -14,6 +18,10 @@ export class Queen extends Piece {
         { x: -1, y: -1 }
     ];
 
+    /**
+     * Creates an instance of a Queen.
+     * @param pieceColor - The color of the Queen (White or Black).
+     */
     constructor(private pieceColor: Color) {
         super(pieceColor);
         this._FENChar = pieceColor === Color.White ? FENChar.WhiteQueen : FENChar.BlackQueen;

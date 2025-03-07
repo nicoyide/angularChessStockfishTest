@@ -6,4 +6,4 @@ Images for pieces are sourced from the official Lichess repository.
 
 Live version: awsomecstutorials.github.io/chess-game
 
-Tutorial available on the FreeCodeCamp YouTube channel.
+

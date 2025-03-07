@@ -1,9 +1,9 @@
 # ChessGame
 
-The chess application consists of two modes: playing against a friend in the same browser and playing against the computer, which utilizes the Stockfish REST API from https://stockfish.online/
+The chess application has two modes: playing against a friend in the same browser or playing against the computer, which uses the Stockfish REST API from stockfish.online.
 
-Images for pieces used from Lichess official repo: https://github.com/lichess-org
+Images for pieces are sourced from the official Lichess repository.
 
-Live version: https://awsomecstutorials.github.io/chess-game/
+Live version: awsomecstutorials.github.io/chess-game
 
-Tutorial can be found on FreeCodeCamp youtube channel: https://youtu.be/fJIsqZmQVZQ
+Tutorial available on the FreeCodeCamp YouTube channel.
